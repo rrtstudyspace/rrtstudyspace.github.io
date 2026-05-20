@@ -141,6 +141,38 @@ tbody td{padding:14px 16px;font-size:0.9rem;color:var(--text-dark);}
 .empty p{font-size:0.9rem;}
 .cred-box{background:#f0fdf4;border:1px solid #10B981;border-radius:10px;padding:14px 16px;margin-top:16px;font-size:0.85rem;color:#065f46;display:none;}
 .cred-box strong{display:block;margin-bottom:6px;font-size:0.9rem;}
+.btn-join{background:rgba(16,185,129,0.15);color:var(--green-dark);}
+.btn-join:hover{background:rgba(16,185,129,0.3);}
+.btn-wa{background:rgba(37,211,102,0.12);color:#128C7E;}
+.btn-wa:hover{background:rgba(37,211,102,0.25);}
+.btn-att{background:rgba(245,200,66,0.15);color:#b45309;}
+.btn-att:hover{background:rgba(245,200,66,0.3);}
+/* ATTENDANCE TAB */
+.att-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:28px;}
+.att-card{background:var(--white);border-radius:16px;border:1px solid var(--border);padding:22px;}
+.att-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.att-student-name{font-weight:600;color:var(--navy);font-size:0.95rem;}
+.att-count{font-family:"Cormorant Garamond",serif;font-size:2rem;font-weight:700;color:var(--green-dark);line-height:1;}
+.att-count-lbl{font-size:0.72rem;color:var(--text-light);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;}
+.att-mark-btn{width:100%;padding:10px;background:var(--green);color:var(--white);border:none;border-radius:9px;font-family:"DM Sans",sans-serif;font-size:0.88rem;font-weight:600;cursor:pointer;margin-top:14px;transition:all 0.2s;}
+.att-mark-btn:hover{background:var(--green-dark);}
+.att-dates{margin-top:12px;display:flex;flex-wrap:wrap;gap:6px;}
+.att-date-chip{background:var(--green-light);color:var(--green-dark);padding:3px 10px;border-radius:50px;font-size:0.72rem;font-weight:600;}
+/* PROGRESS */
+.prog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:28px;}
+.prog-card{background:var(--white);border-radius:16px;border:1px solid var(--border);padding:22px;}
+.prog-name{font-weight:600;color:var(--navy);margin-bottom:4px;font-size:0.95rem;}
+.prog-subject{font-size:0.78rem;color:var(--text-light);margin-bottom:14px;}
+.prog-bar-wrap{background:#e5e7eb;border-radius:50px;height:10px;margin-bottom:8px;overflow:hidden;}
+.prog-bar{height:100%;border-radius:50px;background:linear-gradient(90deg,var(--green),var(--green-dark));transition:width 0.4s;}
+.prog-pct{font-family:"Cormorant Garamond",serif;font-size:1.6rem;font-weight:700;color:var(--navy);}
+.prog-slider{width:100%;margin:10px 0;accent-color:var(--green);}
+.prog-save-btn{width:100%;padding:9px;background:var(--navy);color:var(--white);border:none;border-radius:9px;font-family:"DM Sans",sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer;margin-top:6px;transition:all 0.2s;}
+.prog-save-btn:hover{background:var(--navy-mid);}
+/* SETTINGS */
+.settings-card{background:var(--white);border-radius:16px;border:1px solid var(--border);padding:28px;margin-bottom:20px;max-width:480px;}
+.settings-title{font-family:"Cormorant Garamond",serif;font-size:1.1rem;font-weight:700;color:var(--navy);margin-bottom:16px;}
+.batch-field{display:none;}
 @media(max-width:768px){
   .stats-row{grid-template-columns:repeat(2,1fr);}
   .topbar-user{display:none;}
@@ -206,8 +238,11 @@ tbody td{padding:14px 16px;font-size:0.9rem;color:var(--text-dark);}
       <button class="tab active" onclick="showTab('students')">👥 Students</button>
       <button class="tab" onclick="showTab('fees')">💰 Fee Tracker</button>
       <button class="tab" onclick="showTab('materials')">📚 Materials</button>
+      <button class="tab" onclick="showTab('attendance')">📅 Attendance</button>
+      <button class="tab" onclick="showTab('progress')">📈 Progress</button>
       <button class="tab" onclick="showTab('notes')">📝 Notes</button>
       <button class="tab" onclick="showTab('announcements')">📢 Announcements</button>
+      <button class="tab" onclick="showTab('settings')">⚙️ Settings</button>
     </div>
 
     <!-- STUDENTS TAB -->
@@ -300,10 +335,63 @@ tbody td{padding:14px 16px;font-size:0.9rem;color:var(--text-dark);}
         <div class="loading"><div class="spinner"></div>Loading...</div>
       </div>
     </div>
+
+    <!-- ATTENDANCE TAB -->
+    <div id="tab-attendance" style="display:none;">
+      <div class="sec-header">
+        <span class="sec-title">📅 Attendance — <span id="attMonthLabel"></span></span>
+      </div>
+      <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:20px;">Click "Mark Today" after each class. All dates are saved automatically.</p>
+      <div class="att-grid" id="attGrid">
+        <div class="loading"><div class="spinner"></div>Loading...</div>
+      </div>
+    </div>
+
+    <!-- PROGRESS TAB -->
+    <div id="tab-progress" style="display:none;">
+      <div class="sec-header">
+        <span class="sec-title">📈 Student Progress</span>
+      </div>
+      <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:20px;">Drag the slider to update each student's progress. Students can see this on their portal.</p>
+      <div class="prog-grid" id="progGrid">
+        <div class="loading"><div class="spinner"></div>Loading...</div>
+      </div>
+    </div>
+
+    <!-- SETTINGS TAB -->
+    <div id="tab-settings" style="display:none;">
+      <div class="sec-header"><span class="sec-title">⚙️ Settings</span></div>
+      <div class="settings-card">
+        <div class="settings-title">🪑 Maximum Seats</div>
+        <p style="font-size:0.83rem;color:var(--text-light);margin-bottom:14px;">Change this when you expand RRT Academy capacity.</p>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <input type="number" id="maxSeatsInput" min="1" max="50" value="10" style="width:100px;padding:10px 14px;border:1px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:1rem;color:var(--text-dark);outline:none;"/>
+          <button onclick="saveMaxSeats()" style="padding:10px 20px;background:var(--green);color:var(--white);border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;">Save</button>
+          <span id="maxSeatsSaved" style="display:none;font-size:0.82rem;color:var(--green-dark);font-weight:600;">✅ Saved!</span>
+        </div>
+      </div>
+      <div class="settings-card">
+        <div class="settings-title">🎥 Batch Class Rooms</div>
+        <p style="font-size:0.83rem;color:var(--text-light);margin-bottom:14px;">These Jitsi room names are used when a student's class type is set to Batch.</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:0.85rem;font-weight:600;color:var(--text-mid);width:60px;">Batch A</span>
+            <input type="text" id="batchARoomInput" value="rrt-std10-batchA" style="flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-family:monospace;font-size:0.88rem;color:var(--text-dark);outline:none;"/>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:0.85rem;font-weight:600;color:var(--text-mid);width:60px;">Batch B</span>
+            <input type="text" id="batchBRoomInput" value="rrt-std10-batchB" style="flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-family:monospace;font-size:0.88rem;color:var(--text-dark);outline:none;"/>
+          </div>
+          <div style="margin-top:6px;">
+            <button onclick="saveBatchRooms()" style="padding:10px 20px;background:var(--green);color:var(--white);border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;">Save</button>
+            <span id="batchRoomsSaved" style="display:none;font-size:0.82rem;color:var(--green-dark);font-weight:600;margin-left:12px;">✅ Saved!</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
-
-<!-- ADD/EDIT STUDENT MODAL -->
 <div class="modal-overlay" id="studentModal" onclick="handleOverlayClick(event,'studentModal')">
   <div class="modal" onclick="event.stopPropagation()">
     <h2 class="modal-title" id="modalTitle">Add New Student</h2>
@@ -356,10 +444,18 @@ tbody td{padding:14px 16px;font-size:0.9rem;color:var(--text-dark);}
     <div class="form-field"><label>Parent WhatsApp Number</label><input type="tel" id="fPhone" placeholder="+91 9xxxxxxxxx" autocomplete="off"/></div>
     <div class="form-field"><label>Join Date</label><input type="date" id="fJoin"/></div>
     <div class="form-field"><label>Class Type</label>
-      <select id="fClassType">
+      <select id="fClassType" onchange="toggleBatchField()">
         <option value="one-to-one">One-to-One</option>
         <option value="batch">Batch Class</option>
       </select>
+    </div>
+    <div class="form-field batch-field" id="fBatchNameField">
+      <label>Batch Name</label>
+      <select id="fBatchName">
+        <option value="rrt-std10-batchA">Batch A (rrt-std10-batchA)</option>
+        <option value="rrt-std10-batchB">Batch B (rrt-std10-batchB)</option>
+      </select>
+      <div class="form-hint">This is the shared Jitsi room for this batch. Update room names anytime in Settings.</div>
     </div>
     <div class="form-field"><label>Status</label>
       <select id="fStatus">
@@ -475,6 +571,7 @@ onAuthStateChanged(auth, user => {
     document.getElementById('app').style.display = 'block';
     document.getElementById('adminEmail').textContent = user.email;
     loadStudents();
+    loadSettings();
     document.getElementById('feeMonthLabel').textContent = currentMonth;
   } else {
     document.getElementById('loginScreen').style.display = 'flex';
@@ -548,7 +645,10 @@ function renderStudents(){
       <td><div class="action-btns">
         <button class="btn-sm btn-edit" onclick="openEditStudent('${s.id}')">✏️ Edit</button>
         ${feeBtn}
+        <button class="btn-sm btn-join" onclick="joinClass('${s.jitsiRoom||'rrt-class'}','${s.classType||'one-to-one'}','${s.batchName||''}')">🎥 Join</button>
+        ${s.phone ? `<button class="btn-sm btn-wa" onclick="window.open('https://wa.me/91${s.phone.replace(/\D/g,'')}','_blank')">💬 WA</button>` : ''}
         <button class="btn-sm btn-mat" onclick="openMatForStudent('${s.id}')">📚 Materials</button>
+        <button class="btn-sm btn-att" onclick="markAttendance('${s.id}')">📅 Att</button>
         <button class="btn-sm btn-del" onclick="deleteStudent('${s.id}','${s.name}')">🗑</button>
       </div></td>
     </tr>`;
@@ -570,6 +670,7 @@ window.openAddStudent = function(){
   document.getElementById('fJoin').value=new Date().toISOString().split('T')[0];
   document.getElementById('fStatus').value='active';
   document.getElementById('fClassType').value='one-to-one';
+  toggleBatchField();
   document.getElementById('fPasswordField').style.display='block';
   document.getElementById('credBox').style.display='none';
   document.getElementById('studentModal').classList.add('open');
@@ -592,6 +693,8 @@ window.openEditStudent = function(id){
   document.getElementById('fJoin').value=s.joinDate||'';
   document.getElementById('fStatus').value=s.status||'active';
   document.getElementById('fClassType').value=s.classType||'one-to-one';
+  document.getElementById('fBatchName').value=s.batchName||'rrt-std10-batchA';
+  toggleBatchField();
   document.getElementById('fPasswordField').style.display='none';
   document.getElementById('credBox').style.display='none';
   document.getElementById('studentModal').classList.add('open');
@@ -608,7 +711,8 @@ window.saveStudent = async function(){
   const joinDate = document.getElementById('fJoin').value;
   const status = document.getElementById('fStatus').value;
   const classType = document.getElementById('fClassType').value;
-  const jitsiRoom = 'rrt-' + username.replace('rrt.','');
+  const batchName = classType==='batch' ? document.getElementById('fBatchName').value : '';
+  const jitsiRoom = classType==='batch' ? batchName : ('rrt-' + username.replace('rrt.',''));
 
   if(!name){ alert('Please enter student name.'); return; }
   if(!username){ alert('Please enter a username.'); return; }
@@ -616,7 +720,7 @@ window.saveStudent = async function(){
   const btn = document.getElementById('saveStudentBtn');
   btn.disabled=true; btn.textContent='Saving...';
 
-  const data = { name, standard, subject, syllabus, username, phone, joinDate, status, classType, jitsiRoom, feePaid: status==='active', fees:{}, notes:'' };
+  const data = { name, standard, subject, syllabus, username, phone, joinDate, status, classType, batchName, jitsiRoom, feePaid: status==='active', fees:{}, notes:'' };
 
   try{
     if(editingId){
@@ -688,8 +792,7 @@ window.toggleFee = async function(id){
   if(!s) return;
   const fees = s.fees||{};
   const newPaid = !(fees[currentMonth]);
-  fees[currentMonth] = newPaid || null;
-  if(!fees[currentMonth]) delete fees[currentMonth];
+  if(newPaid){ fees[currentMonth] = true; } else { delete fees[currentMonth]; }
   await updateDoc(doc(db,'students',id),{fees, feePaid: newPaid});
   await loadStudents();
 };
@@ -698,8 +801,8 @@ window.toggleFeeMonth = async function(id, month){
   const s = students.find(x=>x.id===id);
   if(!s) return;
   const fees = s.fees||{};
-  fees[month] = !fees[month];
-  if(!fees[month]) delete fees[month];
+  const nowPaid = !(fees[month]);
+  if(nowPaid){ fees[month] = true; } else { delete fees[month]; }
   const feePaid = !!(fees[currentMonth]);
   await updateDoc(doc(db,'students',id),{fees, feePaid});
   await loadStudents();
@@ -824,7 +927,7 @@ function updateStats(){
   document.getElementById('statStudents').textContent = students.length;
   document.getElementById('statPaid').textContent = paid;
   document.getElementById('statPending').textContent = active.length - paid;
-  document.getElementById('statSeats').textContent = Math.max(0, 10-students.length);
+  document.getElementById('statSeats').textContent = Math.max(0, maxSeats-students.length);
 }
 
 // ── NOTES ──
@@ -859,15 +962,18 @@ window.saveNote = async function(){
 
 // ── TABS ──
 window.showTab = function(tab){
-  ['students','fees','materials','notes','announcements'].forEach(t=>{
+  ['students','fees','materials','attendance','progress','notes','announcements','settings'].forEach(t=>{
     document.getElementById('tab-'+t).style.display = t===tab?'block':'none';
   });
   document.querySelectorAll('.tab').forEach((el,i)=>{
-    const tabs=['students','fees','materials','notes','announcements'];
+    const tabs=['students','fees','materials','attendance','progress','notes','announcements','settings'];
     el.classList.toggle('active',tabs[i]===tab);
   });
   if(tab==='announcements') loadAnnouncementsList();
   if(tab==='materials') renderMatStudentBtns();
+  if(tab==='attendance'){ document.getElementById('attMonthLabel').textContent=currentMonth; renderAttendance(); }
+  if(tab==='progress') renderProgress();
+  if(tab==='settings') loadSettings();
 };
 
 // ── ANNOUNCEMENTS ──
@@ -933,10 +1039,144 @@ async function loadAnnouncementsList(){
   } catch(e){ wrap.innerHTML='<p style="color:var(--text-light);font-size:0.85rem;">Could not load announcements.</p>'; }
 }
 
+// ── BATCH FIELD TOGGLE ──
+window.toggleBatchField = function(){
+  const isBatch = document.getElementById('fClassType').value === 'batch';
+  document.getElementById('fBatchNameField').style.display = isBatch ? 'block' : 'none';
+};
+
+// ── ATTENDANCE ──
+function renderAttendance(){
+  const grid = document.getElementById('attGrid');
+  if(!students.length){ grid.innerHTML=`<div class="empty"><div class="empty-icon">📅</div><p>No students yet.</p></div>`; return; }
+  const active = students.filter(s=>!s.status||s.status==='active');
+  if(!active.length){ grid.innerHTML=`<div class="empty"><div class="empty-icon">📅</div><p>No active students.</p></div>`; return; }
+  grid.innerHTML = active.map(s => {
+    const att = s.attendance||{};
+    const monthDates = Object.keys(att).filter(d=>d.startsWith(new Date().getFullYear()+'-'+(String(new Date().getMonth()+1).padStart(2,'0')))).sort();
+    const chips = monthDates.map(d=>`<span class="att-date-chip">${new Date(d+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</span>`).join('');
+    return `<div class="att-card">
+      <div class="att-card-top">
+        <div>
+          <div class="att-student-name">${s.name}</div>
+          <div style="font-size:0.75rem;color:var(--text-light)">Std ${s.standard||'?'} · ${s.subject||'—'}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="att-count">${monthDates.length}</div>
+          <div class="att-count-lbl">This Month</div>
+        </div>
+      </div>
+      <div class="att-dates">${chips||'<span style="font-size:0.78rem;color:var(--text-light)">No classes marked yet this month.</span>'}</div>
+      <button class="att-mark-btn" onclick="markAttendance('${s.id}')">✅ Mark Today's Class</button>
+    </div>`;
+  }).join('');
+}
+
+window.markAttendance = async function(id){
+  const s = students.find(x=>x.id===id);
+  if(!s) return;
+  const today = new Date().toISOString().split('T')[0];
+  const att = s.attendance||{};
+  if(att[today]){ alert(`✅ Attendance already marked for ${s.name} today (${today}).`); return; }
+  att[today] = true;
+  try{
+    await updateDoc(doc(db,'students',id),{attendance:att});
+    await loadStudents();
+    if(document.getElementById('tab-attendance').style.display!=='none') renderAttendance();
+  } catch(e){ alert('Error: '+e.message); }
+};
+
+// ── PROGRESS ──
+function renderProgress(){
+  const grid = document.getElementById('progGrid');
+  if(!students.length){ grid.innerHTML=`<div class="empty"><div class="empty-icon">📈</div><p>No students yet.</p></div>`; return; }
+  const active = students.filter(s=>!s.status||s.status==='active');
+  grid.innerHTML = active.map(s => {
+    const pct = s.progress||0;
+    const color = pct>=80?'var(--green)':pct>=50?'var(--gold)':'var(--red)';
+    return `<div class="prog-card">
+      <div class="prog-name">${s.name}</div>
+      <div class="prog-subject">Std ${s.standard||'?'} · ${s.subject||'—'}</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+        <div style="flex:1;">
+          <div class="prog-bar-wrap"><div class="prog-bar" id="progbar-${s.id}" style="width:${pct}%;background:${color};"></div></div>
+        </div>
+        <span class="prog-pct" style="color:${color}">${pct}%</span>
+      </div>
+      <input type="range" class="prog-slider" min="0" max="100" value="${pct}" id="prog-${s.id}"
+        oninput="document.getElementById('progval-${s.id}').textContent=this.value+'%';document.querySelector('#progbar-${s.id}').style.width=this.value+'%'"/>
+      <div id="progval-${s.id}" style="font-size:0.78rem;color:var(--text-light);text-align:right;margin-bottom:4px;">${pct}%</div>
+      <button class="prog-save-btn" onclick="saveProgress('${s.id}')">💾 Save Progress</button>
+    </div>`;
+  }).join('');
+}
+
+window.saveProgress = async function(id){
+  const val = parseInt(document.getElementById('prog-'+id).value)||0;
+  try{
+    await updateDoc(doc(db,'students',id),{progress:val});
+    await loadStudents();
+    renderProgress();
+  } catch(e){ alert('Error: '+e.message); }
+};
+
+// ── SETTINGS ──
+let maxSeats = 10;
+let batchRooms = { A:'rrt-std10-batchA', B:'rrt-std10-batchB' };
+
+async function loadSettings(){
+  try{
+    const snap = await getDocs(query(collection(db,'settings')));
+    snap.forEach(d=>{
+      const data = d.data();
+      if(data.maxSeats) { maxSeats=data.maxSeats; document.getElementById('maxSeatsInput').value=maxSeats; }
+      if(data.batchA) { batchRooms.A=data.batchA; document.getElementById('batchARoomInput').value=data.batchA; }
+      if(data.batchB) { batchRooms.B=data.batchB; document.getElementById('batchBRoomInput').value=data.batchB; }
+    });
+    // also update batch dropdown in student modal
+    updateBatchDropdown();
+  } catch(e){ console.error(e); }
+}
+
+function updateBatchDropdown(){
+  const sel = document.getElementById('fBatchName');
+  sel.innerHTML = `
+    <option value="${batchRooms.A}">Batch A (${batchRooms.A})</option>
+    <option value="${batchRooms.B}">Batch B (${batchRooms.B})</option>
+  `;
+}
+
+window.saveMaxSeats = async function(){
+  const val = parseInt(document.getElementById('maxSeatsInput').value)||10;
+  try{
+    const snap = await getDocs(query(collection(db,'settings')));
+    if(snap.empty){ await addDoc(collection(db,'settings'),{maxSeats:val}); }
+    else { await updateDoc(doc(db,'settings',snap.docs[0].id),{maxSeats:val}); }
+    maxSeats=val; updateStats();
+    const el=document.getElementById('maxSeatsSaved'); el.style.display='inline'; setTimeout(()=>el.style.display='none',2500);
+  } catch(e){ alert('Error: '+e.message); }
+};
+
+window.saveBatchRooms = async function(){
+  const a = document.getElementById('batchARoomInput').value.trim();
+  const b = document.getElementById('batchBRoomInput').value.trim();
+  if(!a||!b){ alert('Please enter both room names.'); return; }
+  try{
+    const snap = await getDocs(query(collection(db,'settings')));
+    if(snap.empty){ await addDoc(collection(db,'settings'),{batchA:a,batchB:b}); }
+    else { await updateDoc(doc(db,'settings',snap.docs[0].id),{batchA:a,batchB:b}); }
+    batchRooms={A:a,B:b}; updateBatchDropdown();
+    const el=document.getElementById('batchRoomsSaved'); el.style.display='inline'; setTimeout(()=>el.style.display='none',2500);
+  } catch(e){ alert('Error: '+e.message); }
+};
+
 // ── HELPERS ──
 window.closeModal = function(id){ document.getElementById(id).classList.remove('open'); };
 window.handleOverlayClick = function(e,id){ if(e.target===document.getElementById(id)) closeModal(id); };
-window.joinClass = function(room,name){ window.open('https://meet.jit.si/'+room+'#userInfo.displayName="Remya Ma\'am"','_blank'); };
+window.joinClass = function(room, classType, batchName){
+  const finalRoom = (classType==='batch' && batchName) ? batchName : room;
+  window.open('https://meet.jit.si/'+finalRoom+'#userInfo.displayName="Remya Bhaskaran"','_blank');
+};
 </script>
 </body>
 </html>
