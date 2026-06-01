@@ -649,6 +649,7 @@ function renderStudents(){
         ${s.phone ? `<button class="btn-sm btn-wa" onclick="window.open('https://wa.me/91${s.phone.replace(/\D/g,'')}','_blank')">💬 WA</button>` : ''}
         <button class="btn-sm btn-mat" onclick="openMatForStudent('${s.id}')">📚 Materials</button>
         <button class="btn-sm btn-att" onclick="markAttendance('${s.id}')">📅 Att</button>
+        <button class="btn-sm" style="background:${isActive?'#fef2f2':'#f0fdf4'};color:${isActive?'#dc2626':'#059669'};border:1px solid ${isActive?'#fecaca':'#bbf7d0'}" onclick="toggleStudentStatus('${s.id}','${status}')">${isActive?'🔴 Deactivate':'🟢 Activate'}</button>
         <button class="btn-sm btn-del" onclick="deleteStudent('${s.id}','${s.name}')">🗑</button>
       </div></td>
     </tr>`;
@@ -726,14 +727,20 @@ window.saveStudent = async function(){
     if(editingId){
       // Edit — just update Firestore profile
       delete data.fees; delete data.notes;
+      const currentUser = auth.currentUser;
+      if(!currentUser){ alert('Session expired. Please refresh the page and log in again.'); btn.disabled=false; btn.textContent='Save Student'; return; }
       await updateDoc(doc(db,'students',editingId), data);
       closeModal('studentModal');
       await loadStudents();
     } else {
       // New student — create Firebase Auth account first
       if(!password){ alert('Please enter a password for the new student.'); btn.disabled=false; btn.textContent='Save Student'; return; }
+      const adminEmail = auth.currentUser.email;
+      const adminPasswordInput = document.getElementById('loginPass').value;
       const email = username + '@rrtstudyspace.com';
       await createUserWithEmailAndPassword(auth, email, password);
+      // Re-sign-in as admin immediately so session is restored
+      await signInWithEmailAndPassword(auth, adminEmail, adminPasswordInput);
       // Save profile to Firestore
       await addDoc(collection(db,'students'), {...data, createdAt: serverTimestamp()});
       // Show credentials
@@ -756,6 +763,17 @@ window.deleteStudent = async function(id, name){
   if(!confirm(`Delete ${name}? This will remove their profile from Firestore. Note: their Firebase Auth login must be deleted separately from the Firebase Console.`)) return;
   try{
     await deleteDoc(doc(db,'students',id));
+    await loadStudents();
+  } catch(e){ alert('Error: '+e.message); }
+};
+
+window.toggleStudentStatus = async function(id, currentStatus){
+  const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+  const student = students.find(s=>s.id===id);
+  const name = student?.name || 'this student';
+  if(!confirm(`Mark ${name} as ${newStatus}?`)) return;
+  try{
+    await updateDoc(doc(db,'students',id), { status: newStatus, feePaid: newStatus==='active' });
     await loadStudents();
   } catch(e){ alert('Error: '+e.message); }
 };
