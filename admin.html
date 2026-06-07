@@ -768,6 +768,7 @@ window.deleteStudent = async function(id, name){
 };
 
 window.toggleStudentStatus = async function(id, currentStatus){
+  if(!auth.currentUser){ alert('Session expired. Please refresh the page and log in again.'); return; }
   const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
   const student = students.find(s=>s.id===id);
   const name = student?.name || 'this student';
@@ -806,6 +807,7 @@ function renderFees(){
 }
 
 window.toggleFee = async function(id){
+  if(!auth.currentUser){ alert('Session expired. Please refresh the page and log in again.'); return; }
   const s = students.find(x=>x.id===id);
   if(!s) return;
   const fees = s.fees||{};
@@ -816,6 +818,7 @@ window.toggleFee = async function(id){
 };
 
 window.toggleFeeMonth = async function(id, month){
+  if(!auth.currentUser){ alert('Session expired. Please refresh the page and log in again.'); return; }
   const s = students.find(x=>x.id===id);
   if(!s) return;
   const fees = s.fees||{};
