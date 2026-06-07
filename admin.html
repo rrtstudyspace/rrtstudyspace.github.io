@@ -768,7 +768,6 @@ window.deleteStudent = async function(id, name){
 };
 
 window.toggleStudentStatus = async function(id, currentStatus){
-  if(!auth.currentUser){ alert('Session expired. Please refresh the page and log in again.'); return; }
   const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
   const student = students.find(s=>s.id===id);
   const name = student?.name || 'this student';
@@ -813,8 +812,10 @@ window.toggleFee = async function(id){
   const fees = s.fees||{};
   const newPaid = !(fees[currentMonth]);
   if(newPaid){ fees[currentMonth] = true; } else { delete fees[currentMonth]; }
-  await updateDoc(doc(db,'students',id),{fees, feePaid: newPaid});
-  await loadStudents();
+  try{
+    await updateDoc(doc(db,'students',id),{fees, feePaid: newPaid});
+    await loadStudents();
+  } catch(e){ alert('Error updating fee: '+e.message); }
 };
 
 window.toggleFeeMonth = async function(id, month){
@@ -825,8 +826,10 @@ window.toggleFeeMonth = async function(id, month){
   const nowPaid = !(fees[month]);
   if(nowPaid){ fees[month] = true; } else { delete fees[month]; }
   const feePaid = !!(fees[currentMonth]);
-  await updateDoc(doc(db,'students',id),{fees, feePaid});
-  await loadStudents();
+  try{
+    await updateDoc(doc(db,'students',id),{fees, feePaid});
+    await loadStudents();
+  } catch(e){ alert('Error updating fee: '+e.message); }
 };
 
 // ── MATERIALS ──
